@@ -15,16 +15,14 @@ class Board extends React.Component{
 
   renderSquare(i)
   {
-    return <Squares value={this.props.squares[i]} onClick={()=>(this.props.handleClick(i))}/>;
+    return <Squares value={this.props.squares[i]} onClick={()=>(this.props.onClick(i))}/>;
   }
 
   render()
   {
-    var isX=this.state.isX?"O":"X";
-    var Winner=this.props.winner;
+
     return(
     <div>
-    <div>It is {isX}s turn </div>
       <div className="board-row">
       {this.renderSquare(0)}
       {this.renderSquare(1)}
@@ -40,8 +38,6 @@ class Board extends React.Component{
       {this.renderSquare(7)}
       {this.renderSquare(8)}
       </div>
-
-      <div>{declareWinner(this.props.squares)}</div>
     </div>
     );
 
@@ -61,7 +57,7 @@ class Game extends React.Component{
   }
   handleClick(i)
   {
-    const history=this.state.histroy;
+    const history=this.state.history;
     const current=history[history.length-1];
     const squares=current.squares.slice();
 
@@ -71,27 +67,39 @@ class Game extends React.Component{
       squares[i]=this.state.isX?"O":"X";
       this.setState(
           {
-          history[history.length-1]:squares,
+          history:[{squares: squares}],
           isX:!this.state.isX,
           }
-        )
-        declareWinner(this.state.squares);
+        );
     }
 
 
   }
 
+  renderBoard(squares){
+    return(
+      <Board squares={squares} onClick={(i=null)=>this.handleClick(i)}/>
+          )
+  }
+
   render(){
     const history=this.state.history;
     const current=history[history.length-1];
-    const squares=current.squares.slice()
+    const squares=current.squares.slice();
+    var status=declareWinner(squares);
+    if (!status)
+      status=this.state.isX?"It is O\'s turn":"It is X\'s turn";
+
     return(
-      <Board squares={current.squares[i]} onClick={(i)=>this.handleClick(i)}/>
+      <div>
+      <div>{status}</div>
+      <div>{this.renderBoard(current.squares)}</div>
+      </div>
     );
   }
 }
 
-//================================================================
+//----------------------
 ReactDOM.render(
   <Game/>,
   document.getElementById('root')
