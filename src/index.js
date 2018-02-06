@@ -49,6 +49,7 @@ class Game extends React.Component{
       history:[
               {squares: Array(9).fill(null)}
             ],
+      stepNumber:0,
       isX: false,
     };
   }
@@ -64,13 +65,23 @@ class Game extends React.Component{
       squares[i]=this.state.isX?"O":"X";
       this.setState(
           {
-          history:[{squares: squares}],
+            //history:[{squares:squares}],
+          history:history.concat([{squares:squares}]),
+          stepNumber:this.state.history.length,
           isX:!this.state.isX,
           }
         );
     }
 
 
+  }
+  jumpTo(step){
+    this.setState(
+      {
+        stepNumber:step,
+        isX: (this.state.stepNumber%2===0),
+      }
+    );
   }
 
   renderBoard(squares){
@@ -81,9 +92,16 @@ class Game extends React.Component{
 
   render(){
     const history=this.state.history;
-    const current=history[history.length-1];
-    const squares=current.squares.slice();
-    var status=declareWinner(squares);
+    const current=history[this.state.stepNumber];
+    const moves=history.map((step,index)=>{
+      let x=index?"Go to step"+index:"Go to Start";
+      return(
+        <li key={index}>
+        <button onClick={()=>{this.jumpTo(index)}}>{x}</button>
+        </li>
+      );
+    });
+    var status=declareWinner(current.squares);
     if (!status)
       status=this.state.isX?"It is O\'s turn":"It is X\'s turn";
 
@@ -91,6 +109,7 @@ class Game extends React.Component{
       <div>
       <div>{status}</div>
       <div>{this.renderBoard(current.squares)}</div>
+      <ol>{moves}</ol>
       </div>
     );
   }
@@ -103,6 +122,7 @@ ReactDOM.render(
 )
 function declareWinner(value)
 {
+  if(!value) return false;
   const winMatrix=[
     [0,1,2],
     [3,4,5],
