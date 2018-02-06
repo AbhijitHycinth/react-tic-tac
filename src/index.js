@@ -64,7 +64,8 @@ class Game extends React.Component{
       squares[i]=this.state.isX?"O":"X";
       this.setState(
           {
-          history:[{squares: squares}],
+            //history:[{squares:squares}],
+          history:history.concat([{squares:squares}]),
           isX:!this.state.isX,
           }
         );
@@ -82,8 +83,7 @@ class Game extends React.Component{
   render(){
     const history=this.state.history;
     const current=history[history.length-1];
-    const squares=current.squares.slice();
-    var status=declareWinner(squares);
+    var status=declareWinner(current.squares);
     if (!status)
       status=this.state.isX?"It is O\'s turn":"It is X\'s turn";
 
@@ -103,6 +103,7 @@ ReactDOM.render(
 )
 function declareWinner(value)
 {
+  if(!value) return false;
   const winMatrix=[
     [0,1,2],
     [3,4,5],
