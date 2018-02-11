@@ -13,9 +13,9 @@ function Squares(props){
 
 function Board(props){
 
-  function renderSquare(i)
+  function renderSquare(value)
   {
-    return <Squares value={props.squares[i]} onClick={()=>(props.onClick(i))}/>;
+    return <Squares value={props.squares[value]} onClick={()=>(props.onClick(value))}/>;
   }
 
     return(
@@ -85,20 +85,17 @@ class Game extends React.Component{
 
   renderBoard(squares){
     return(
-      <Board squares={squares} onClick={(i=null)=>this.handleClick(i)}/>
+      <Board squares={squares} onClick={(value)=>this.handleClick(value)}/>
           )
   }
 
   render(){
     const history=this.state.history;
     const current=history[this.state.stepNumber];
-    //var value=this.stepNumber;
-    //this.
     const moves=history.map((step,index)=>
     {
       let x=index?"Go to step"+index:"Go to Start";
       return(
-        //<li key={index}>
         <option value={index}>{x}</option>
 
       );
