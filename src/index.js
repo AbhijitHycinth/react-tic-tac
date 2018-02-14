@@ -18,23 +18,31 @@ function Board(props){
     return <Squares value={props.squares[value]} onClick={()=>(props.onClick(value))}/>;
   }
 
+  function renderRow(row_index)
+  {
+    return(
+      <div className="board-row">
+      {renderSquare(row_index)}
+      {renderSquare(row_index+1)}
+      {renderSquare(row_index+2)}
+      </div>
+    )
+  }
+
+  function renderBoard()
+  {
+    let rows=[];
+    for(let i=0;i<3;i++)
+    {
+      rows.push(renderRow(i*3));
+    }
+    return(rows);
+  }
+
     return(
     <div>
-      <div className="board-row">
-      {renderSquare(0)}
-      {renderSquare(1)}
-      {renderSquare(2)}
-      </div>
-      <div className="board-row">
-      {renderSquare(3)}
-      {renderSquare(4)}
-      {renderSquare(5)}
-      </div>
-      <div className="board-row">
-      {renderSquare(6)}
-      {renderSquare(7)}
-      {renderSquare(8)}
-      </div>
+
+      {renderBoard()}
     </div>
     );
 
@@ -102,7 +110,7 @@ class Game extends React.Component{
     });
     var status=declareWinner(current.squares);
     if (!status)
-      status=this.state.isX?"It is O\'s turn":"It is X\'s turn";
+      status=this.state.isX?"It is O's turn":"It is X's turn";
 
     return(
       <div>
