@@ -5,7 +5,15 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 function Squares(props){
-  const x=props.value==props.winner?"square btn btn-success":"square btn btn-default";
+  const x=props.value===props.winner?"square btn btn-success":"square btn btn-default";
+if(props.bold===true)
+{
+return(
+    <button className={x} onClick={props.onClick}>
+    <b>{props.value}</b>
+    </button>
+  );
+}
   return(
     <button className={x} onClick={props.onClick}>
     {props.value}
@@ -16,9 +24,13 @@ function Squares(props){
 
 function Board(props){
 
-  function renderSquare(value)
+  function renderSquare(index)
   {
-    return <Squares value={props.squares[value]} winner={props.winner} onClick={()=>(props.onClick(value))}/>;
+    if(index === props.bold)
+    return (<Squares value={props.squares[index]} winner={props.winner} bold={true} onClick={()=>(props.onClick(index))}/>);
+    else {
+      return <Squares value={props.squares[index]} winner={props.winner} bold={false} onClick={()=>(props.onClick(index))}/>;
+    }
   }
 
   function renderRow(row_index)
@@ -60,23 +72,25 @@ class Game extends React.Component{
       history:[
               {squares: Array(9).fill(null)}
             ],
+      bold_index:Array(9).fill(null),
       stepNumber:0,
       isX: false,
     };
   }
-  handleClick(i)
+  handleClick(index)
   {
     const history=this.state.history;
     const current=history[history.length-1];
     const squares=current.squares.slice();
-
-
-    if(!squares[i] && !declareWinner(squares))
+    const bold_index=this.state.bold_index.slice();
+    if(!squares[index] && !declareWinner(squares))
     {
-      squares[i]=this.state.isX?"O":"X";
+      squares[index]=this.state.isX?"O":"X";
+      bold_index[this.state.history.length-1]=index;
       this.setState(
           {
           history:history.concat([{squares:squares}]),
+          bold_index:bold_index,
           stepNumber:this.state.history.length,
           isX:!this.state.isX,
           }
@@ -94,20 +108,21 @@ class Game extends React.Component{
     );
   }
 
-  renderBoard(squares,winner){
+  renderBoard(squares,winner,bold_index){
     return(
-      <Board squares={squares} winner={winner} onClick={(value)=>this.handleClick(value)}/>
+      <Board squares={squares} winner={winner} bold={bold_index} onClick={(value)=>this.handleClick(value)}/>
           )
   }
 
   render(){
     const history=this.state.history;
     const current=history[this.state.stepNumber];
+    const bold_index=this.state.bold_index.slice();
     const moves=history.map((step,index)=>
     {
       let x=index?"Go to step"+index:"Go to Start";
       return(
-        <option value={index}>{x}</option>
+        <option key={index} value={index}>{x}</option>
 
       );
     });
@@ -121,7 +136,7 @@ class Game extends React.Component{
     return(
       <div>
       <div>{status}</div>
-      <div>{this.renderBoard(current.squares,winner)}</div>
+      <div>{this.renderBoard(current.squares,winner,bold_index[this.state.stepNumber-1])}</div>
       <select onChange={(event)=>{this.jumpTo(event.target.value)}}>{moves}</select>
       </div>
     );
