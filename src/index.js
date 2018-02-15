@@ -1,10 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 function Squares(props){
+  const x=props.value==props.winner?"square btn btn-success":"square btn btn-default";
   return(
-    <button className="square" onClick={props.onClick}>
+    <button className={x} onClick={props.onClick}>
     {props.value}
     </button>
   )
@@ -15,7 +18,7 @@ function Board(props){
 
   function renderSquare(value)
   {
-    return <Squares value={props.squares[value]} onClick={()=>(props.onClick(value))}/>;
+    return <Squares value={props.squares[value]} winner={props.winner} onClick={()=>(props.onClick(value))}/>;
   }
 
   function renderRow(row_index)
@@ -91,9 +94,9 @@ class Game extends React.Component{
     );
   }
 
-  renderBoard(squares){
+  renderBoard(squares,winner){
     return(
-      <Board squares={squares} onClick={(value)=>this.handleClick(value)}/>
+      <Board squares={squares} winner={winner} onClick={(value)=>this.handleClick(value)}/>
           )
   }
 
@@ -108,14 +111,17 @@ class Game extends React.Component{
 
       );
     });
-    var status=declareWinner(current.squares);
-    if (!status)
+    let winner=declareWinner(current.squares);
+    let status;
+    if(winner)
+    status="The Winner is"+winner;
+    else if (!winner)
       status=this.state.isX?"It is O's turn":"It is X's turn";
 
     return(
       <div>
       <div>{status}</div>
-      <div>{this.renderBoard(current.squares)}</div>
+      <div>{this.renderBoard(current.squares,winner)}</div>
       <select onChange={(event)=>{this.jumpTo(event.target.value)}}>{moves}</select>
       </div>
     );
@@ -145,7 +151,9 @@ function declareWinner(value)
   {
     if(value[temp[0]] && value[temp[0]]===value[temp[1]] && value[temp[1]]===value[temp[2]])
     {
-      return "The Winner is "+value[temp[0]];
+      return value[temp[0]];
 
-    }  }
+    }
+  }
+  return false;
 }
